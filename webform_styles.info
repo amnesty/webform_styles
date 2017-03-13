@@ -1,0 +1,6 @@
+name = Webform Styles
+description = Adds inline style fields to webform module fields
+dependencies[] = webform
+core = 7.x
+package = Webform
+core = "7.x"
