@@ -39,8 +39,6 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
       $element['#attributes']['style'][] = array();
     }
     $element['#attributes']['style'] = $component['webform_styles'];
-  }
-}
 
 /**
  * Implements hook_form_webform_component_edit_form_alter().
@@ -77,8 +75,6 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 20,
       '#weight' => 4,
     ),
-  );
-}
 
 /**
  * Implements webform_component_update().

@@ -8,6 +8,7 @@
 /**
  * This function enables the module.
  */
+
 function webform_styles_install() {
   $result = db_query("ALTER TABLE {webform_component} ADD webform_styles TEXT COMMENT 'Serialized inline styles for webform component';");
   if ($result == false) {
