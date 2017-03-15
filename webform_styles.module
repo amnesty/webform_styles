@@ -46,6 +46,11 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
     //$element['#attributes']['style'] = $component['webform_styles'];
     $element['#attributes']['style'] = $styles;
   }
+
+  if($component['webform_slide'] == 1) {
+    echo "a";
+  }
+  
 }
 
 /**
@@ -99,12 +104,14 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
     ),
   );
 
+
   if (module_exists('options_element')) {
+    $webform_slide = db_query("SELECT webform_slide FROM {webform_component} WHERE nid = :nid AND cid = :cid", array(':nid' => (int) $nid, ':cid' => (int) $cid))->fetchField();
     $form['display']['slider'] = array(
       '#type' => 'checkbox',
       '#title' => t('Slider'),
-      //'#default_value' => $component['display']['slider'],
-      '#description' => t('Check this option if the option combo should be display as a slider.'),
+      '#default_value' => $webform_slide,
+      '#description' => t('Check this option if the option combo should be show as a slider.'),
       '#weight' => 0,
     );
   }
@@ -127,9 +134,15 @@ function webform_styles_webform_component_update($component) {
     $style["color"] = $component['webform_styles']['color'];
   }
 
+  $slider = 0;
+  if (isset($component['display']['slider'])) {
+    $slider = $component['display']['slider'];
+  }
+
   $result = db_update('webform_component')
     ->fields(array(
       'webform_styles' => serialize($style),
+      'webform_slide' => $slider,
     ))
     ->condition('nid', (int) $component['nid'], '=')
     ->condition('cid', (int) $component['cid'], '=')

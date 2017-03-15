@@ -10,7 +10,7 @@
  */
 
 function webform_styles_install() {
-  $result = db_query("ALTER TABLE {webform_component} ADD webform_styles TEXT COMMENT 'Serialized inline styles for webform component';");
+  $result = db_query("ALTER TABLE {webform_component} ADD webform_styles TEXT COMMENT 'Serialized inline styles for webform component', ADD webform_slide TINYINT COMMENT 'The fieldset is showed as a slider';");
   if ($result == false) {
     drupal_set_message(t('Failed to add a column into the webform component table'), 'error');
   }
@@ -20,7 +20,7 @@ function webform_styles_install() {
  * This function uninstalls the module.
  */
 function webform_styles_uninstall() {
-  $result = db_query("ALTER TABLE {webform_component} DROP webform_styles");
+  $result = db_query("ALTER TABLE {webform_component} DROP webform_styles, DROP webform_slide");
   if ($result == false) {
     drupal_set_message(t('Failed to remove a column from the webform component table'), 'error');
   }
