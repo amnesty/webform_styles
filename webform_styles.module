@@ -21,11 +21,6 @@ function webform_styles_node_load($nodes, $types) {
       $styles[$record['cid']] = $record['webform_styles'];
       $node->webform_styles = unserialize($record['webform_styles']);
     }
-
-    // Add the webform components into the node to later render them.
-    //$node->webform_styles = $styles;
-
-   // dpm($node->webform_styles);
   }
 }
 
@@ -34,16 +29,40 @@ function webform_styles_node_load($nodes, $types) {
  */
 function webform_styles_webform_component_render_alter(&$element, &$component) {
   if ($component['webform_styles']) {
+
+    // Create string from array, with styles separated by a semi-colon.
+    $styles = implode('; ', array_map(
+        function ($v, $k) {
+          return sprintf("%s:%s", $k, $v);
+        },
+        unserialize($component['webform_styles']),
+        array_keys(unserialize($component['webform_styles']))
+    ));
+
     // Create the style array attribute if it doesn't exists.
     if (!isset($element['#attributes']['style'])) {
       $element['#attributes']['style'][] = array();
     }
-    $element['#attributes']['style'] = $component['webform_styles'];
+    //$element['#attributes']['style'] = $component['webform_styles'];
+    $element['#attributes']['style'] = $styles;
+  }
+}
 
 /**
  * Implements hook_form_webform_component_edit_form_alter().
  */
 function webform_styles_form_webform_component_edit_form_alter(&$form, $component) {
+
+  $nid = $form['nid']['#value'];
+  $cid = $form['cid']['#value'];
+  if ($cid == NULL) {
+    $cid = 0;
+  }
+
+  // Fetch the class(es) of requested component.
+  $webform_style = db_query("SELECT webform_styles FROM {webform_component} WHERE nid = :nid AND cid = :cid", array(':nid' => (int) $nid, ':cid' => (int) $cid))->fetchField();
+  $styles = unserialize($webform_style);
+
   $form['webform_styles'] = array(
     '#type' => 'fieldset',
     '#title' => t('Inline styles'),
@@ -57,15 +76,17 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#size' => 50,
       '#maxlength' => 255,
       '#weight' => 2,
+      "#default_value" => isset($styles['font-family']) ? $styles['font-family'] : '',
     ),
     'font-size' => array(
       '#type' => 'textfield',
       '#title' => t('Font Size'),
-      '#postfix' => t('Px'),
+      '#postfix' => t('px'),
       '#description' => t('Specify font size to be used on the form field'),
-      '#size' => 3,
-      '#maxlength' => 3,
+      '#size' => 5,
+      '#maxlength' => 5,
       '#weight' => 3,
+      "#default_value" => isset($styles['font-size']) ? $styles['font-size'] : '',
     ),
     'color' => array(
       '#type' => 'textfield',
@@ -74,7 +95,20 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#size' => 10,
       '#maxlength' => 20,
       '#weight' => 4,
+      "#default_value" => isset($styles['color']) ? $styles['color'] : '',
     ),
+  );
+
+  if (module_exists('options_element')) {
+    $form['display']['slider'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Slider'),
+      //'#default_value' => $component['display']['slider'],
+      '#description' => t('Check this option if the option combo should be display as a slider.'),
+      '#weight' => 0,
+    );
+  }
+}
 
 /**
  * Implements webform_component_update().
