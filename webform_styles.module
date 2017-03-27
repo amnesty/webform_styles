@@ -104,19 +104,17 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
     ),
   );
 
-  $node = node_load($nid);
-  foreach ($node->webform['components'] as $key => $type) {
-    if (($type['type'] == 'select') && module_exists('options_element')) {
-      $webform_slide = db_query("SELECT webform_slide FROM {webform_component} WHERE nid = :nid AND cid = :cid", array(':nid' => (int) $nid, ':cid' => (int) $cid))->fetchField();
-      $form['display']['slider'] = array(
-        '#type' => 'checkbox',
-        '#title' => t('Slider'),
-        '#default_value' => $webform_slide,
-        '#description' => t('Check this option if the option combo should be show as a slider.'),
-        '#weight' => 0,
-      );
-    }
+  if ($component['build_info']['args'][1]['type'] == 'select') {
+    $webform_slide = db_query("SELECT webform_slide FROM {webform_component} WHERE nid = :nid AND cid = :cid", array(':nid' => (int) $nid, ':cid' => (int) $cid))->fetchField();
+    $form['display']['slider'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Slider'),
+      '#default_value' => $webform_slide,
+      '#description' => t('Check this option if the option combo should be show as a slider.'),
+      '#weight' => 0,
+    );
   }
+
 }
 
 /**
