@@ -70,29 +70,22 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
  * Post-render of slides
  */
 function webform_styles_post_render_slides($content, $element){
-/*
-  print '<pre>----->';
-  print_r($element);
-  print_r($content);
-  die();
-*/
 
+  // creating HTML for Swiper JS
   foreach($element['#options'] as $key => $value){
-
     if(!empty($key)){
       $swiper .= '<div class="swiper-slide">
                    <input class="swiper-input" id="'.$key.'" name="'.$key.'" type="text" data-placeholder="" value="'.$value.' '.$element['#description'].'" autocomplete="off" readonly="readonly">
                 </div>';
     }
-
   }
 
+  // we keep the drop-down, although will be hidden by CSS
   return '<div id="swiper-'.$element['#id'].'" class="swiper-container">
               <div class="swiper-wrapper">'
               .$swiper.
               '</div>
           </div>'.$content;
-
 }
 
 
