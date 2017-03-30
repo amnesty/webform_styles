@@ -1,0 +1,3 @@
+.swiper-container + .webform-component-select{
+	display: none !important;
+}

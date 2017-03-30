@@ -6,6 +6,18 @@
  */
 
 /**
+ * Implements hook_init().
+ */
+function webform_styles_init(){
+
+  drupal_add_css(drupal_get_path('module', 'webform_styles') . '/assets/swiper.min.css');
+  drupal_add_css(drupal_get_path('module', 'webform_styles') . '/assets/webform_styles.css');
+
+  drupal_add_js(drupal_get_path('module', 'webform_styles') . '/assets/swiper.jquery.min.js');
+  drupal_add_js(drupal_get_path('module', 'webform_styles') . '/assets/webform_styles.js');
+}
+
+/**
  * Implements hook_node_load().
  */
 function webform_styles_node_load($nodes, $types) {
@@ -48,10 +60,41 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
   }
 
   if ($component['webform_slide'] == 1) {
-   
+    $element['#post_render'] = array('webform_styles_post_render_slides');
   }
   
 }
+
+
+/**
+ * Post-render of slides
+ */
+function webform_styles_post_render_slides($content, $element){
+/*
+  print '<pre>----->';
+  print_r($element);
+  print_r($content);
+  die();
+*/
+
+  foreach($element['#options'] as $key => $value){
+
+    if(!empty($key)){
+      $swiper .= '<div class="swiper-slide">
+                   <input class="swiper-input" id="'.$key.'" name="'.$key.'" type="text" data-placeholder="" value="'.$value.' '.$element['#description'].'" autocomplete="off" readonly="readonly">
+                </div>';
+    }
+
+  }
+
+  return '<div id="swiper-'.$element['#id'].'" class="swiper-container">
+              <div class="swiper-wrapper">'
+              .$swiper.
+              '</div>
+          </div>'.$content;
+
+}
+
 
 /**
  * Implements hook_form_webform_component_edit_form_alter().
@@ -155,4 +198,15 @@ function webform_styles_webform_component_update($component) {
  */
 function webform_styles_webform_component_insert($component) {
   webform_styles_webform_component_update($component);
+}
+
+
+function webform_styles_form_element($variables) {
+
+  $element = $variables['element'];
+  // Disable radio button N/A
+  if ($element['#type'] == 'radio' && $element['#return_value'] === '_none') {
+    $variables['element']['#attributes']['disabled'] = TRUE;
+  }
+  return theme_form_element($variables);
 }
