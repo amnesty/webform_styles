@@ -138,6 +138,33 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#weight' => 4,
       "#default_value" => isset($styles['color']) ? $styles['color'] : '',
     ),
+    'border' => array(
+      '#type' => 'textfield',
+      '#title' => t('Border'),
+      '#description' => t('Specify the border size of the form field'),
+      '#default_value' => isset($styles['border']) ? $styles['border'] : '',
+      '#size' => 4,
+      '#maxlength' => 6,
+      '#weight' => 5,
+    ),
+    'margin' => array(
+      '#type' => 'textfield',
+      '#title' => t('Margin'),
+      '#description' => t('Specify the margin of the form field'),
+      '#default_value' => isset($styles['margin']) ? $styles['margin'] : '',
+      '#size' => 4,
+      '#maxlength' => 6,
+      '#weight' => 6,
+    ),
+    'background-color' => array(
+      '#type' => 'textfield',
+      '#title' => t('Background Color'),
+      '#description' => t('Specify background color to be used on the form field'),
+      '#size' => 10,
+      '#maxlength' => 20,
+      '#weight' => 4,
+      "#default_value" => isset($styles['background-color']) ? $styles['background-color'] : '',
+    ),
   );
 
   if ($component['build_info']['args'][1]['type'] == 'select') {
@@ -160,15 +187,25 @@ function webform_styles_webform_component_update($component) {
 
   $style = array();
 
-  if (isset($component['webform_styles']['font-family'])) {
-    $style["font-family"] = $component['webform_styles']['font-family'];
+  foreach ($component['webform_styles'] as $key => $value) {
+    $style[$key] = $value;
   }
-  if (isset($component['webform_styles']['font-size'])) {
-    $style["font-size"] = $component['webform_styles']['font-size'];
-  }
-  if (isset($component['webform_styles']['color'])) {
-    $style["color"] = $component['webform_styles']['color'];
-  }
+
+  // if (isset($component['webform_styles']['font-family'])) {
+  //   $style["font-family"] = $component['webform_styles']['font-family'];
+  // }
+  // if (isset($component['webform_styles']['font-size'])) {
+  //   $style["font-size"] = $component['webform_styles']['font-size'];
+  // }
+  // if (isset($component['webform_styles']['color'])) {
+  //   $style["color"] = $component['webform_styles']['color'];
+  // }
+  //  if (isset($component['webform_styles']['border'])) {
+  //   $style["border"] = $component['webform_styles']['border'];
+  // }
+  //  if (isset($component['webform_styles']['margin'])) {
+  //   $style["margin"] = $component['webform_styles']['margin'];
+  // }
 
   $slider = 0;
   if (isset($component['display']['slider'])) {
