@@ -191,22 +191,6 @@ function webform_styles_webform_component_update($component) {
     $style[$key] = $value;
   }
 
-  // if (isset($component['webform_styles']['font-family'])) {
-  //   $style["font-family"] = $component['webform_styles']['font-family'];
-  // }
-  // if (isset($component['webform_styles']['font-size'])) {
-  //   $style["font-size"] = $component['webform_styles']['font-size'];
-  // }
-  // if (isset($component['webform_styles']['color'])) {
-  //   $style["color"] = $component['webform_styles']['color'];
-  // }
-  //  if (isset($component['webform_styles']['border'])) {
-  //   $style["border"] = $component['webform_styles']['border'];
-  // }
-  //  if (isset($component['webform_styles']['margin'])) {
-  //   $style["margin"] = $component['webform_styles']['margin'];
-  // }
-
   $slider = 0;
   if (isset($component['display']['slider'])) {
     $slider = $component['display']['slider'];
@@ -230,9 +214,7 @@ function webform_styles_webform_component_insert($component) {
   webform_styles_webform_component_update($component);
 }
 
-
 function webform_styles_form_element($variables) {
-
   $element = $variables['element'];
   // Disable radio button N/A
   if ($element['#type'] == 'radio' && $element['#return_value'] === '_none') {
