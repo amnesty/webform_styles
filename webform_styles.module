@@ -156,6 +156,15 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 6,
       '#weight' => 6,
     ),
+    'padding' => array(
+      '#type' => 'textfield',
+      '#title' => t('Padding'),
+      '#description' => t('Specify padding to be used on the form field'),
+      '#size' => 4,
+      '#maxlength' => 6,
+      '#weight' => 7,
+      "#default_value" => isset($styles['padding']) ? $styles['padding'] : '',
+    ),
     'background-color' => array(
       '#type' => 'textfield',
       '#title' => t('Background Color'),
@@ -165,6 +174,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#weight' => 4,
       "#default_value" => isset($styles['background-color']) ? $styles['background-color'] : '',
     ),
+    
   );
 
   if ($component['build_info']['args'][1]['type'] == 'select') {
