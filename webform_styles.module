@@ -143,8 +143,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#title' => t('Border'),
       '#description' => t('Specify the border size of the form field'),
       '#default_value' => isset($styles['border']) ? $styles['border'] : '',
-      '#size' => 4,
-      '#maxlength' => 6,
+      '#size' => 10,
+      '#maxlength' => 50,
       '#weight' => 5,
     ),
     'margin' => array(
