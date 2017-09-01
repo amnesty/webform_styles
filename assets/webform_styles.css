@@ -1,3 +1,7 @@
 .swiper-container + .webform-component-select{
 	display: none !important;
 }
+
+.payamount-container + .webform-component-select{
+	display: none !important;
+}

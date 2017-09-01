@@ -19,6 +19,9 @@ function webform_styles_init(){
 
 /**
  * Implements hook_node_load().
+ *
+ * @param $nodes
+ * @param $types
  */
 function webform_styles_node_load($nodes, $types) {
   // Iterate the node list.
@@ -38,6 +41,9 @@ function webform_styles_node_load($nodes, $types) {
 
 /**
  * Implements hook_webform_component_render_alter().
+ *
+ * @param $element
+ * @param $component
  */
 function webform_styles_webform_component_render_alter(&$element, &$component) {
   if ($component['webform_styles']) {
@@ -45,7 +51,7 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
     // Create string from array, with styles separated by a semi-colon.
     $styles = implode('; ', array_map(
         function ($v, $k) {
-          return sprintf("%s:%s", $k, $v);
+          return !empty($v) ? sprintf('%s:%s', $k, $v) : false;
         },
         unserialize($component['webform_styles']),
         array_keys(unserialize($component['webform_styles']))
@@ -59,8 +65,12 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
     $element['#attributes']['style'] = $styles;
   }
 
-  if ($component['webform_slide'] == 1) {
+  if ($component['webform_slide'] === "1") {
     $element['#post_render'] = array('webform_styles_post_render_slides');
+  }
+
+  if ($component['webform_payamount'] === "1") {
+    $element['#post_render'] = array('webform_styles_post_render_payamount');
   }
   
 }
@@ -68,15 +78,25 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
 
 /**
  * Post-render of slides
+ *
+ * @param $content
+ * @param $element
+ *
+ * @return string
  */
 function webform_styles_post_render_slides($content, $element){
 
+
   // creating HTML for Swiper JS
+  $swiper = '';
   foreach($element['#options'] as $key => $value){
     if(!empty($key)){
-      $swiper .= '<div class="swiper-slide">
-                   <input class="swiper-input" id="'.$key.'" name="'.$key.'" type="text" data-placeholder="" value="'.$value.' '.$element['#description'].'" autocomplete="off" readonly="readonly">
-                </div>';
+      $swiper .= '<div class="swiper-slide">'
+                  . '<input class="swiper-input" id="' . $key . '" '
+                  . 'name="' . $key . '" data-placeholder="" '
+                  . 'value="' . $value . ' ' . $element['#description'] . '" '
+                  . 'autocomplete="off" readonly>'
+                  . '</div>';
     }
   }
 
@@ -89,19 +109,55 @@ function webform_styles_post_render_slides($content, $element){
 }
 
 
+function webform_styles_post_render_payamount($content, $element){
+
+//  print_r($element);
+//  print_r($element['#value']);
+
+  $payAmount = '';
+  foreach($element['#options'] as $key => $value){
+    if (!empty($key)) {
+      $payAmount .= '<div class="payamount-slide">'
+                    . '<input class="payamount-input'. (($element['#value'] == $key) ? ' value-selected' : ''). '" '
+                    . 'id="' . $key. '" '
+                    . 'name="' . $key . '" '
+                    . 'value="' . $value . '" '
+                    . 'autocomplete="off" '
+                    . 'readonly>'
+                    . '</div>';
+    }
+  }
+
+  return '<div id="payamount-'.$element['#id'].'" class="payamount-container">
+            <div class="payamount-wrapper">'
+            . $payAmount
+            . '<input type="hidden" name="payamount-selected" id="payamount-selected" value=""/>'
+          . '</div>'
+          . '<label> '
+            . '<input id="otherAmount" name ="otherAmount" type="text" placeholder="Otra cantidad" autocomplete="off"/>'
+            . '<span>' . t('Otra cantidad') . '</span>'
+          . '</label>'
+        . '</div>'
+        . $content;
+
+}
+
 /**
  * Implements hook_form_webform_component_edit_form_alter().
+ *
+ * @param $form
+ * @param $component
  */
 function webform_styles_form_webform_component_edit_form_alter(&$form, $component) {
 
   $nid = $form['nid']['#value'];
   $cid = $form['cid']['#value'];
-  if ($cid == NULL) {
+  if (NULL === $cid) {
     $cid = 0;
   }
 
   // Fetch the class(es) of requested component.
-  $webform_style = db_query("SELECT webform_styles FROM {webform_component} WHERE nid = :nid AND cid = :cid", array(':nid' => (int) $nid, ':cid' => (int) $cid))->fetchField();
+  $webform_style = db_query('SELECT webform_styles FROM {webform_component} WHERE nid = :nid AND cid = :cid', array(':nid' => (int) $nid, ':cid' => $cid))->fetchField();
   $styles = unserialize($webform_style);
 
   $form['webform_styles'] = array(
@@ -117,33 +173,33 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#size' => 50,
       '#maxlength' => 255,
       '#weight' => 2,
-      "#default_value" => isset($styles['font-family']) ? $styles['font-family'] : '',
+      '#default_value' => isset($styles['font-family']) ? $styles['font-family'] : '',
     ),
     'font-size' => array(
       '#type' => 'textfield',
       '#title' => t('Font Size'),
       '#postfix' => t('px'),
       '#description' => t('Specify font size to be used on the form field'),
-      '#size' => 5,
-      '#maxlength' => 5,
+      '#size' => 25,
+      '#maxlength' => 25,
       '#weight' => 3,
-      "#default_value" => isset($styles['font-size']) ? $styles['font-size'] : '',
+      '#default_value' => isset($styles['font-size']) ? $styles['font-size'] : '',
     ),
     'color' => array(
       '#type' => 'textfield',
       '#title' => t('Color'),
       '#description' => t('Specify color to be used on the form field'),
-      '#size' => 10,
+      '#size' => 20,
       '#maxlength' => 20,
       '#weight' => 4,
-      "#default_value" => isset($styles['color']) ? $styles['color'] : '',
+      '#default_value' => isset($styles['color']) ? $styles['color'] : '',
     ),
     'border' => array(
       '#type' => 'textfield',
       '#title' => t('Border'),
       '#description' => t('Specify the border size of the form field'),
       '#default_value' => isset($styles['border']) ? $styles['border'] : '',
-      '#size' => 10,
+      '#size' => 50,
       '#maxlength' => 50,
       '#weight' => 5,
     ),
@@ -152,39 +208,48 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#title' => t('Margin'),
       '#description' => t('Specify the margin of the form field'),
       '#default_value' => isset($styles['margin']) ? $styles['margin'] : '',
-      '#size' => 4,
-      '#maxlength' => 6,
+      '#size' => 50,
+      '#maxlength' => 50,
       '#weight' => 6,
     ),
     'padding' => array(
       '#type' => 'textfield',
       '#title' => t('Padding'),
       '#description' => t('Specify padding to be used on the form field'),
-      '#size' => 4,
-      '#maxlength' => 6,
+      '#size' => 50,
+      '#maxlength' => 50,
       '#weight' => 7,
-      "#default_value" => isset($styles['padding']) ? $styles['padding'] : '',
+      '#default_value' => isset($styles['padding']) ? $styles['padding'] : '',
     ),
     'background-color' => array(
       '#type' => 'textfield',
       '#title' => t('Background Color'),
       '#description' => t('Specify background color to be used on the form field'),
-      '#size' => 10,
+      '#size' => 20,
       '#maxlength' => 20,
       '#weight' => 4,
-      "#default_value" => isset($styles['background-color']) ? $styles['background-color'] : '',
+      '#default_value' => isset($styles['background-color']) ? $styles['background-color'] : '',
     ),
     
   );
 
-  if ($component['build_info']['args'][1]['type'] == 'select') {
-    $webform_slide = db_query("SELECT webform_slide FROM {webform_component} WHERE nid = :nid AND cid = :cid", array(':nid' => (int) $nid, ':cid' => (int) $cid))->fetchField();
-    $form['display']['slider'] = array(
+  if ($component['build_info']['args'][1]['type'] === 'select') {
+    $webform_slide = db_query('SELECT webform_slide FROM {webform_component} WHERE nid = :nid AND cid = :cid', array(':nid' => (int) $nid, ':cid' => $cid))->fetchField();
+    $webform_payamount = db_query('SELECT webform_payamount FROM {webform_component} WHERE nid = :nid AND cid = :cid', array(':nid' => (int) $nid, ':cid' => $cid))->fetchField();
+
+     $form['display']['slider'] = array(
+       '#type' => 'checkbox',
+       '#title' => t('Slider'),
+       '#default_value' => $webform_slide,
+       '#description' => t('Check this option if the option combo should be show as a slider.'),
+       '#weight' => 0,
+     );
+    $form['display']['payamount'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Slider'),
-      '#default_value' => $webform_slide,
-      '#description' => t('Check this option if the option combo should be show as a slider.'),
-      '#weight' => 0,
+      '#title' => t('Pay Amount'),
+      '#default_value' => $webform_payamount,
+      '#description' => t('Check this option if should be show as a payment module (three buttons and one text box).'),
+      '#weight' => 1,
     );
   }
 
@@ -192,13 +257,20 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
 
 /**
  * Implements webform_component_update().
+ *
+ * @param $component
  */
 function webform_styles_webform_component_update($component) {
 
   $style = array();
 
-  foreach ($component['webform_styles'] as $key => $value) {
-    $style[$key] = $value;
+  if (isset($component['webform_styles'])) {
+
+    $webform_styles = ! is_array($component['webform_styles']) ? unserialize($component['webform_styles']) : $component['webform_styles'];
+  
+    foreach ($webform_styles as $key => $value) {
+        $style[$key] = $value;
+    }
   }
 
   $slider = 0;
@@ -206,10 +278,16 @@ function webform_styles_webform_component_update($component) {
     $slider = $component['display']['slider'];
   }
 
+  $payamount = 0;
+  if (isset($component['display']['payamount'])) {
+    $payamount = $component['display']['payamount'];
+  }
+
   $result = db_update('webform_component')
     ->fields(array(
       'webform_styles' => serialize($style),
       'webform_slide' => $slider,
+      'webform_payamount' => $payamount,
     ))
     ->condition('nid', (int) $component['nid'], '=')
     ->condition('cid', (int) $component['cid'], '=')
@@ -219,6 +297,8 @@ function webform_styles_webform_component_update($component) {
 
 /**
  * Implements webform_component_insert().
+ *
+ * @param $component
  */
 function webform_styles_webform_component_insert($component) {
   webform_styles_webform_component_update($component);
@@ -227,7 +307,7 @@ function webform_styles_webform_component_insert($component) {
 function webform_styles_form_element($variables) {
   $element = $variables['element'];
   // Disable radio button N/A
-  if ($element['#type'] == 'radio' && $element['#return_value'] === '_none') {
+  if ($element['#type'] === 'radio' && $element['#return_value'] === '_none') {
     $variables['element']['#attributes']['disabled'] = TRUE;
   }
   return theme_form_element($variables);
