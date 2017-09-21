@@ -65,11 +65,11 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
     $element['#attributes']['style'] = $styles;
   }
 
-  if ($component['webform_slide'] === "1") {
+  if ($component['webform_slide'] == "1") {
     $element['#post_render'] = array('webform_styles_post_render_slides');
   }
 
-  if ($component['webform_payamount'] === "1") {
+  if ($component['webform_payamount'] == "1") {
     $element['#post_render'] = array('webform_styles_post_render_payamount');
   }
   
@@ -111,9 +111,6 @@ function webform_styles_post_render_slides($content, $element){
 
 function webform_styles_post_render_payamount($content, $element){
 
-//  print_r($element);
-//  print_r($element['#value']);
-
   $payAmount = '';
   foreach($element['#options'] as $key => $value){
     if (!empty($key)) {
@@ -134,8 +131,8 @@ function webform_styles_post_render_payamount($content, $element){
             . '<input type="hidden" name="payamount-selected" id="payamount-selected" value=""/>'
           . '</div>'
           . '<label> '
-            . '<input id="otherAmount" name ="otherAmount" type="text" placeholder="Otra cantidad" autocomplete="off"/>'
-            . '<span>' . t('Otra cantidad') . '</span>'
+            . '<input class="payamount-otherAmount" id="otherAmount" name ="otherAmount" type="text" placeholder="Otra cantidad" autocomplete="off"/>'
+            . '<span class="payamount-otherAmount-placeholder">' . t('Otra cantidad') . '</span>'
           . '</label>'
         . '</div>'
         . $content;
@@ -152,7 +149,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
 
   $nid = $form['nid']['#value'];
   $cid = $form['cid']['#value'];
-  if (NULL === $cid) {
+  if (NULL == $cid) {
     $cid = 0;
   }
 
