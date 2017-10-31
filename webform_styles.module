@@ -132,7 +132,7 @@ function webform_styles_post_render_payamount($content, $element){
           . '</div>'
           . '<label> '
             . '<input class="payamount-otherAmount" id="otherAmount" name ="otherAmount" type="text" placeholder="Otra cantidad" autocomplete="off"/>'
-            . '<span class="payamount-otherAmount-placeholder">' . t('Otra cantidad') . '</span>'
+            . '<span class="payamount-otherAmount-placeholder" style="display:none">' . t('Otra cantidad') . '</span>'
           . '</label>'
         . '</div>'
         . $content;
@@ -169,7 +169,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#description' => t('Specify font family to be used on the form field'),
       '#size' => 50,
       '#maxlength' => 255,
-      '#weight' => 2,
+      '#weight' => 20,
       '#default_value' => isset($styles['font-family']) ? $styles['font-family'] : '',
     ),
     'font-size' => array(
@@ -179,8 +179,17 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#description' => t('Specify font size to be used on the form field'),
       '#size' => 25,
       '#maxlength' => 25,
-      '#weight' => 3,
+      '#weight' => 30,
       '#default_value' => isset($styles['font-size']) ? $styles['font-size'] : '',
+    ),
+    'text-align' => array(
+      '#type' => 'textfield',
+      '#title' => t('Text align'),
+      '#description' => t('Specify text align to be used on the form field'),
+      '#size' => 25,
+      '#maxlength' => 25,
+      '#weight' => 35,
+      '#default_value' => isset($styles['text-align']) ? $styles['text-align'] : '',
     ),
     'color' => array(
       '#type' => 'textfield',
@@ -188,7 +197,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#description' => t('Specify color to be used on the form field'),
       '#size' => 20,
       '#maxlength' => 20,
-      '#weight' => 4,
+      '#weight' => 40,
       '#default_value' => isset($styles['color']) ? $styles['color'] : '',
     ),
     'border' => array(
@@ -198,7 +207,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#default_value' => isset($styles['border']) ? $styles['border'] : '',
       '#size' => 50,
       '#maxlength' => 50,
-      '#weight' => 5,
+      '#weight' => 50,
     ),
     'margin' => array(
       '#type' => 'textfield',
@@ -207,7 +216,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#default_value' => isset($styles['margin']) ? $styles['margin'] : '',
       '#size' => 50,
       '#maxlength' => 50,
-      '#weight' => 6,
+      '#weight' => 60,
     ),
     'padding' => array(
       '#type' => 'textfield',
@@ -215,7 +224,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#description' => t('Specify padding to be used on the form field'),
       '#size' => 50,
       '#maxlength' => 50,
-      '#weight' => 7,
+      '#weight' => 70,
       '#default_value' => isset($styles['padding']) ? $styles['padding'] : '',
     ),
     'background-color' => array(
@@ -224,9 +233,46 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#description' => t('Specify background color to be used on the form field'),
       '#size' => 20,
       '#maxlength' => 20,
-      '#weight' => 4,
+      '#weight' => 80,
       '#default_value' => isset($styles['background-color']) ? $styles['background-color'] : '',
     ),
+    'width' => array(
+        '#type' => 'textfield',
+        '#title' => t('Width'),
+        '#description' => t('Specify the width to be used on the form field'),
+        '#size' => 20,
+        '#maxlength' => 20,
+        '#weight' => 90,
+        '#default_value' => isset($styles['width']) ? $styles['width'] : '',
+    ),
+      'float' => array(
+          '#type' => 'textfield',
+          '#title' => 'Float',
+          '#description' => t('Specify where float the form field'),
+          '#size' => 20,
+          '#maxlength' => 20,
+          '#weight' => 100,
+          '#default_value' => isset($styles['float']) ? $styles['float'] : '',
+      ),
+      'display' => array(
+          '#type' => 'textfield',
+          '#title' => 'Display',
+          '#description' => t('Specify the display method for the form field'),
+          '#size' => 20,
+          '#maxlength' => 20,
+          '#weight' => 110,
+          '#default_value' => isset($styles['display']) ? $styles['display'] : '',
+      ),
+      'box-shadow' => array(
+          '#type' => 'textfield',
+          '#title' => 'Box shadow',
+          '#description' => t('Specify the box shadow for the form field'),
+          '#size' => 20,
+          '#maxlength' => 20,
+          '#weight' => 120,
+          '#default_value' => isset($styles['box-shadow']) ? $styles['box-shadow'] : '',
+      ),
+
     
   );
 
