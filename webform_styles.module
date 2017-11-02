@@ -272,6 +272,15 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
           '#weight' => 120,
           '#default_value' => isset($styles['box-shadow']) ? $styles['box-shadow'] : '',
       ),
+      'order' => array(
+        '#type' => 'textfield',
+        '#title' => 'Flex-order',
+        '#description' => t('Specify the position when display is flex for the form field'),
+        '#size' => 20,
+        '#maxlength' => 20,
+        '#weight' => 130,
+        '#default_value' => isset($styles['order']) ? $styles['order'] : '',
+      ),
 
     
   );
