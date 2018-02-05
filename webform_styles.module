@@ -72,7 +72,7 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
   if ($component['webform_payamount'] == "1") {
     $element['#post_render'] = array('webform_styles_post_render_payamount');
   }
-  
+
 }
 
 
@@ -130,10 +130,10 @@ function webform_styles_post_render_payamount($content, $element){
             . $payAmount
             . '<input type="hidden" name="payamount-selected" id="payamount-selected" value=""/>'
           . '</div>'
-          . '<label> '
+          /*. '<label> '
             . '<input class="payamount-otherAmount" id="otherAmount" name ="otherAmount" type="text" placeholder="Otra cantidad" autocomplete="off"/>'
             . '<span class="payamount-otherAmount-placeholder" style="display:none">' . t('Otra cantidad') . '</span>'
-          . '</label>'
+          . '</label>'*/
         . '</div>'
         . $content;
 
@@ -282,7 +282,7 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
         '#default_value' => isset($styles['order']) ? $styles['order'] : '',
       ),
 
-    
+
   );
 
   if ($component['build_info']['args'][1]['type'] === 'select') {
@@ -319,7 +319,7 @@ function webform_styles_webform_component_update($component) {
   if (isset($component['webform_styles'])) {
 
     $webform_styles = ! is_array($component['webform_styles']) ? unserialize($component['webform_styles']) : $component['webform_styles'];
-  
+
     foreach ($webform_styles as $key => $value) {
         $style[$key] = $value;
     }
