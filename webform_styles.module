@@ -8,7 +8,7 @@
 /**
  * Implements hook_init().
  */
-function webform_styles_init(){
+function webform_styles_init() {
 
   drupal_add_css(drupal_get_path('module', 'webform_styles') . '/assets/swiper.min.css');
   drupal_add_css(drupal_get_path('module', 'webform_styles') . '/assets/webform_styles.css');
@@ -27,11 +27,11 @@ function webform_styles_node_load($nodes, $types) {
   // Iterate the node list.
   foreach ($nodes as $key => $node) {
     $results = db_select('webform_component')
-      ->fields('webform_component', array('webform_styles', 'cid'))
+      ->fields('webform_component', ['webform_styles', 'cid'])
       ->condition('nid', $node->nid, '=')
       ->execute();
 
-    $styles = array();
+    $styles = [];
     while ($record = $results->fetchAssoc()) {
       $styles[$record['cid']] = $record['webform_styles'];
       $node->webform_styles = unserialize($record['webform_styles']);
@@ -50,27 +50,27 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
 
     // Create string from array, with styles separated by a semi-colon.
     $styles = implode('; ', array_map(
-        function ($v, $k) {
-          return !empty($v) ? sprintf('%s:%s', $k, $v) : false;
-        },
-        unserialize($component['webform_styles']),
-        array_keys(unserialize($component['webform_styles']))
+      function ($v, $k) {
+        return !empty($v) ? sprintf('%s:%s', $k, $v) : FALSE;
+      },
+      unserialize($component['webform_styles']),
+      array_keys(unserialize($component['webform_styles']))
     ));
 
     // Create the style array attribute if it doesn't exists.
     if (!isset($element['#attributes']['style'])) {
-      $element['#attributes']['style'][] = array();
+      $element['#attributes']['style'][] = [];
     }
     //$element['#attributes']['style'] = $component['webform_styles'];
     $element['#attributes']['style'] = $styles;
   }
 
   if ($component['webform_slide'] == "1") {
-    $element['#post_render'] = array('webform_styles_post_render_slides');
+    $element['#post_render'] = ['webform_styles_post_render_slides'];
   }
 
   if ($component['webform_payamount'] == "1") {
-    $element['#post_render'] = array('webform_styles_post_render_payamount');
+    $element['#post_render'] = ['webform_styles_post_render_payamount'];
   }
 
 }
@@ -84,48 +84,48 @@ function webform_styles_webform_component_render_alter(&$element, &$component) {
  *
  * @return string
  */
-function webform_styles_post_render_slides($content, $element){
+function webform_styles_post_render_slides($content, $element) {
 
 
   // creating HTML for Swiper JS
   $swiper = '';
-  foreach($element['#options'] as $key => $value){
-    if(!empty($key)){
+  foreach ($element['#options'] as $key => $value) {
+    if (!empty($key)) {
       $swiper .= '<div class="swiper-slide">'
-                  . '<input class="swiper-input" id="' . $key . '" '
-                  . 'name="' . $key . '" data-placeholder="" '
-                  . 'value="' . $value . ' ' . $element['#description'] . '" '
-                  . 'autocomplete="off" readonly>'
-                  . '</div>';
+        . '<input class="swiper-input" id="' . $key . '" '
+        . 'name="' . $key . '" data-placeholder="" '
+        . 'value="' . $value . ' ' . $element['#description'] . '" '
+        . 'autocomplete="off" readonly>'
+        . '</div>';
     }
   }
 
   // we keep the drop-down, although will be hidden by CSS
-  return '<div id="swiper-'.$element['#id'].'" class="swiper-container">
+  return '<div id="swiper-' . $element['#id'] . '" class="swiper-container">
               <div class="swiper-wrapper">'
-              .$swiper.
-              '</div>
-          </div>'.$content;
+    . $swiper .
+    '</div>
+          </div>' . $content;
 }
 
 
-function webform_styles_post_render_payamount($content, $element){
+function webform_styles_post_render_payamount($content, $element) {
 
   $payAmount = '';
-  foreach($element['#options'] as $key => $value){
+  foreach ($element['#options'] as $key => $value) {
     if (!empty($key)) {
       $payAmount .= '<div class="payamount-slide">'
-                    . '<input class="payamount-input'. (($element['#value'] == $key) ? ' value-selected' : ''). '" '
-                    . 'id="' . $key. '" '
-                    . 'name="' . $key . '" '
-                    . 'value="' . $value . '" '
-                    . 'autocomplete="off" '
-                    . 'readonly>'
-                    . '</div>';
+        . '<input class="payamount-input' . (($element['#value'] == $key) ? ' value-selected' : '') . '" '
+        . 'id="' . $key . '" '
+        . 'name="' . $key . '" '
+        . 'value="' . $value . '" '
+        . 'autocomplete="off" '
+        . 'readonly>'
+        . '</div>';
     }
   }
 
-  return '<div id="payamount-'.$element['#id'].'" class="payamount-container">
+  return '<div id="payamount-' . $element['#id'] . '" class="payamount-container">
             <div class="payamount-wrapper">'
             . $payAmount
             . '<input type="hidden" name="payamount-selected" id="payamount-selected" value=""/>'
@@ -136,7 +136,6 @@ function webform_styles_post_render_payamount($content, $element){
           . '</label>'*/
         . '</div>'
         . $content;
-
 }
 
 /**
@@ -154,16 +153,19 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
   }
 
   // Fetch the class(es) of requested component.
-  $webform_style = db_query('SELECT webform_styles FROM {webform_component} WHERE nid = :nid AND cid = :cid', array(':nid' => (int) $nid, ':cid' => $cid))->fetchField();
+  $webform_style = db_query('SELECT webform_styles FROM {webform_component} WHERE nid = :nid AND cid = :cid', [
+    ':nid' => (int) $nid,
+    ':cid' => $cid,
+  ])->fetchField();
   $styles = unserialize($webform_style);
 
-  $form['webform_styles'] = array(
+  $form['webform_styles'] = [
     '#type' => 'fieldset',
     '#title' => t('Inline styles'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#weight' => 5,
-    'font-family' => array(
+    'font-family' => [
       '#type' => 'textfield',
       '#title' => t('Font Family'),
       '#description' => t('Specify font family to be used on the form field'),
@@ -171,8 +173,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 255,
       '#weight' => 20,
       '#default_value' => isset($styles['font-family']) ? $styles['font-family'] : '',
-    ),
-    'font-size' => array(
+    ],
+    'font-size' => [
       '#type' => 'textfield',
       '#title' => t('Font Size'),
       '#postfix' => t('px'),
@@ -181,8 +183,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 25,
       '#weight' => 30,
       '#default_value' => isset($styles['font-size']) ? $styles['font-size'] : '',
-    ),
-    'text-align' => array(
+    ],
+    'text-align' => [
       '#type' => 'textfield',
       '#title' => t('Text align'),
       '#description' => t('Specify text align to be used on the form field'),
@@ -190,8 +192,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 25,
       '#weight' => 35,
       '#default_value' => isset($styles['text-align']) ? $styles['text-align'] : '',
-    ),
-    'color' => array(
+    ],
+    'color' => [
       '#type' => 'textfield',
       '#title' => t('Color'),
       '#description' => t('Specify color to be used on the form field'),
@@ -199,8 +201,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 20,
       '#weight' => 40,
       '#default_value' => isset($styles['color']) ? $styles['color'] : '',
-    ),
-    'border' => array(
+    ],
+    'border' => [
       '#type' => 'textfield',
       '#title' => t('Border'),
       '#description' => t('Specify the border size of the form field'),
@@ -208,8 +210,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#size' => 50,
       '#maxlength' => 50,
       '#weight' => 50,
-    ),
-    'margin' => array(
+    ],
+    'margin' => [
       '#type' => 'textfield',
       '#title' => t('Margin'),
       '#description' => t('Specify the margin of the form field'),
@@ -217,8 +219,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#size' => 50,
       '#maxlength' => 50,
       '#weight' => 60,
-    ),
-    'padding' => array(
+    ],
+    'padding' => [
       '#type' => 'textfield',
       '#title' => t('Padding'),
       '#description' => t('Specify padding to be used on the form field'),
@@ -226,8 +228,8 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 50,
       '#weight' => 70,
       '#default_value' => isset($styles['padding']) ? $styles['padding'] : '',
-    ),
-    'background-color' => array(
+    ],
+    'background-color' => [
       '#type' => 'textfield',
       '#title' => t('Background Color'),
       '#description' => t('Specify background color to be used on the form field'),
@@ -235,74 +237,89 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
       '#maxlength' => 20,
       '#weight' => 80,
       '#default_value' => isset($styles['background-color']) ? $styles['background-color'] : '',
-    ),
-    'width' => array(
-        '#type' => 'textfield',
-        '#title' => t('Width'),
-        '#description' => t('Specify the width to be used on the form field'),
-        '#size' => 20,
-        '#maxlength' => 20,
-        '#weight' => 90,
-        '#default_value' => isset($styles['width']) ? $styles['width'] : '',
-    ),
-      'float' => array(
-          '#type' => 'textfield',
-          '#title' => 'Float',
-          '#description' => t('Specify where float the form field'),
-          '#size' => 20,
-          '#maxlength' => 20,
-          '#weight' => 100,
-          '#default_value' => isset($styles['float']) ? $styles['float'] : '',
-      ),
-      'display' => array(
-          '#type' => 'textfield',
-          '#title' => 'Display',
-          '#description' => t('Specify the display method for the form field'),
-          '#size' => 20,
-          '#maxlength' => 20,
-          '#weight' => 110,
-          '#default_value' => isset($styles['display']) ? $styles['display'] : '',
-      ),
-      'box-shadow' => array(
-          '#type' => 'textfield',
-          '#title' => 'Box shadow',
-          '#description' => t('Specify the box shadow for the form field'),
-          '#size' => 20,
-          '#maxlength' => 20,
-          '#weight' => 120,
-          '#default_value' => isset($styles['box-shadow']) ? $styles['box-shadow'] : '',
-      ),
-      'order' => array(
-        '#type' => 'textfield',
-        '#title' => 'Flex-order',
-        '#description' => t('Specify the position when display is flex for the form field'),
-        '#size' => 20,
-        '#maxlength' => 20,
-        '#weight' => 130,
-        '#default_value' => isset($styles['order']) ? $styles['order'] : '',
-      ),
+    ],
+    'width' => [
+      '#type' => 'textfield',
+      '#title' => t('Width'),
+      '#description' => t('Specify the width to be used on the form field'),
+      '#size' => 20,
+      '#maxlength' => 20,
+      '#weight' => 90,
+      '#default_value' => isset($styles['width']) ? $styles['width'] : '',
+    ],
+    'float' => [
+      '#type' => 'textfield',
+      '#title' => 'Float',
+      '#description' => t('Specify where float the form field'),
+      '#size' => 20,
+      '#maxlength' => 20,
+      '#weight' => 100,
+      '#default_value' => isset($styles['float']) ? $styles['float'] : '',
+    ],
+    'display' => [
+      '#type' => 'textfield',
+      '#title' => 'Display',
+      '#description' => t('Specify the display method for the form field'),
+      '#size' => 20,
+      '#maxlength' => 20,
+      '#weight' => 110,
+      '#default_value' => isset($styles['display']) ? $styles['display'] : '',
+    ],
+    'box-shadow' => [
+      '#type' => 'textfield',
+      '#title' => 'Box shadow',
+      '#description' => t('Specify the box shadow for the form field'),
+      '#size' => 20,
+      '#maxlength' => 20,
+      '#weight' => 120,
+      '#default_value' => isset($styles['box-shadow']) ? $styles['box-shadow'] : '',
+    ],
+    'order' => [
+      '#type' => 'textfield',
+      '#title' => 'Flex-order',
+      '#description' => t('Specify the position when display is flex for the form field'),
+      '#size' => 20,
+      '#maxlength' => 20,
+      '#weight' => 130,
+      '#default_value' => isset($styles['order']) ? $styles['order'] : '',
+    ],
+    'resize' => [
+      '#type' => 'textfield',
+      '#title' => 'Resize',
+      '#description' => t('Specify the element area resize (auto, both, horizontal, none)'),
+      '#size' => 20,
+      '#maxlength' => 20,
+      '#weight' => 140,
+      '#default_value' => isset($styles['resize']) ? $styles['resize'] : 'none',
+    ],
 
 
-  );
+  ];
 
   if ($component['build_info']['args'][1]['type'] === 'select') {
-    $webform_slide = db_query('SELECT webform_slide FROM {webform_component} WHERE nid = :nid AND cid = :cid', array(':nid' => (int) $nid, ':cid' => $cid))->fetchField();
-    $webform_payamount = db_query('SELECT webform_payamount FROM {webform_component} WHERE nid = :nid AND cid = :cid', array(':nid' => (int) $nid, ':cid' => $cid))->fetchField();
+    $webform_slide = db_query('SELECT webform_slide FROM {webform_component} WHERE nid = :nid AND cid = :cid', [
+      ':nid' => (int) $nid,
+      ':cid' => $cid,
+    ])->fetchField();
+    $webform_payamount = db_query('SELECT webform_payamount FROM {webform_component} WHERE nid = :nid AND cid = :cid', [
+      ':nid' => (int) $nid,
+      ':cid' => $cid,
+    ])->fetchField();
 
-     $form['display']['slider'] = array(
-       '#type' => 'checkbox',
-       '#title' => t('Slider'),
-       '#default_value' => $webform_slide,
-       '#description' => t('Check this option if the option combo should be show as a slider.'),
-       '#weight' => 0,
-     );
-    $form['display']['payamount'] = array(
+    $form['display']['slider'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Slider'),
+      '#default_value' => $webform_slide,
+      '#description' => t('Check this option if the option combo should be show as a slider.'),
+      '#weight' => 0,
+    ];
+    $form['display']['payamount'] = [
       '#type' => 'checkbox',
       '#title' => t('Pay Amount'),
       '#default_value' => $webform_payamount,
       '#description' => t('Check this option if should be show as a payment module (three buttons and one text box).'),
       '#weight' => 1,
-    );
+    ];
   }
 
 }
@@ -314,14 +331,14 @@ function webform_styles_form_webform_component_edit_form_alter(&$form, $componen
  */
 function webform_styles_webform_component_update($component) {
 
-  $style = array();
+  $style = [];
 
   if (isset($component['webform_styles'])) {
 
     $webform_styles = ! is_array($component['webform_styles']) ? unserialize($component['webform_styles']) : $component['webform_styles'];
 
     foreach ($webform_styles as $key => $value) {
-        $style[$key] = $value;
+      $style[$key] = $value;
     }
   }
 
@@ -336,11 +353,11 @@ function webform_styles_webform_component_update($component) {
   }
 
   $result = db_update('webform_component')
-    ->fields(array(
+    ->fields([
       'webform_styles' => serialize($style),
       'webform_slide' => $slider,
       'webform_payamount' => $payamount,
-    ))
+    ])
     ->condition('nid', (int) $component['nid'], '=')
     ->condition('cid', (int) $component['cid'], '=')
     ->execute();
